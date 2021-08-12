@@ -18,11 +18,16 @@ void DeblurPlugin::run() {
    
 }
 
-void DeblurPlugin::output(std::string file) { 
-   std::string command = "eval \"$(conda shell.bash hook)\"; ";
-   command += "conda activate qiime2-2020.11; ";
-   command += "qiime deblur denoise-16S --i-demultiplexed-seqs "+std::string(PluginManager::prefix())+"/"+parameters["inputfile"]+" --p-trim-length "+parameters["trimlength"]+" --o-representative-sequences "+file+"-rep-seqs.qza --o-table "+file+"-table.qza --p-sample-stats --o-stats "+file+"-deblur-stats.qza; conda deactivate";
- //std::cout << command << std::endl;
+void DeblurPlugin::output(std::string file) {
+   std::string command = "export OLDPATH=${PATH}; ";	
+   command += "export PATH=${CONDA_HOME}/bin/:${PATH}; ";	
+   command += "eval \"$(conda shell.bash hook)\"; ";
+   command += "conda activate qiime2-2021.4; ";
+   command += "qiime deblur denoise-16S --i-demultiplexed-seqs "+std::string(PluginManager::prefix())+"/"+parameters["inputfile"]+" --p-trim-length "+parameters["trimlength"]+" --o-representative-sequences "+file+"-rep-seqs.qza --o-table "+file+"-table.qza --p-sample-stats --o-stats "+file+"-deblur-stats.qza; ";
+   command += "conda deactivate; ";
+   command += "conda deactivate; ";
+   command += "export PATH=${OLDPATH}";
+ std::cout << command << std::endl;
 
  system(command.c_str());
 }
